@@ -75,8 +75,13 @@ if ($audioExists) {
     # 映像と音声を結合
     if ($videoSuccess -and $audioSuccess) {
         Write-Host "`n=== 映像と音声を結合 ==="
-        & $ffmpegPath -i "$videoFolder\video.mp4" -i "$audioFolder\audio.mp4" -c:v copy -c:a copy -map 0:v -map 1:a $finalOutput
-        
+        & $ffmpegPath -i "$videoFolder\video.mp4" `
+              -i "$audioFolder\audio.mp4" `
+              -c:v copy -c:a copy `
+              -map 0:v -map 1:a `
+              -bsf:a aac_adtstoasc `
+              -movflags +faststart `
+              $finalOutput
         if (Test-Path $finalOutput) {
             $fileInfo = Get-Item $finalOutput
             Write-Host "完了！$finalOutput が作成されました。(サイズ: $([math]::Round($fileInfo.Length/1MB, 2)) MB)"
